@@ -104,7 +104,6 @@ class spk_vq_vae_resnet(nn.Module):
 		W = self.embed.weight
 		j = L2_dist(Z[:,None],W[None,:]).sum(2).min(1)[1]
 		W_j = W[j]
-		# W_j = self.decomposed_vq(Z)
 
 		if not self.training:
 			self.embed_stat(j)
