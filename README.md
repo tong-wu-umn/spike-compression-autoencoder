@@ -5,7 +5,7 @@ Compression in Large-Scale Neural Recording* in submission to *Journal of Neural
 
 [Pytorch 0.4.0](https://pytorch.org/) is required to run the model.
 
-The idea of compressing neural spikes using deep autoencoder embedding vector quantization is inspired by the awesome work [*Neural Discrete Representation Learning*](http://arxiv.org/abs/1711.00937) by Aaron van den Oord.
+The idea of compressing neural spikes using deep autoencoder embedding vector quantization is inspired by the awesome work [*Neural Discrete Representation Learning*](http://arxiv.org/abs/1711.00937) by Aaron van den Oord *et al*.
 
 ## Author
 Tong Wu<sup>1</sup>, Wenfeng Zhao<sup>1</sup>, Edward Keefer<sup>2</sup>, Zhi Yang<sup>1</sup>
