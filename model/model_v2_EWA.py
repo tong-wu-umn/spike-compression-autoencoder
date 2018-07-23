@@ -79,17 +79,14 @@ class spk_vq_vae_resnet(nn.Module):
 		c = self.dict_cnt
 
 		i = L2_dist(x[:,None], w[None,:]).sum(2).min(1)[1] # indexes of current encoder outputs into VQ codes
-		# unx_i = torch.unique(i.cpu()).to(gpu) # unique indexes of VQ codes being used
-		unx_i, unx_cnts = np.unique(i.cpu(), return_counts=True)
+		unx_i = torch.unique(i.cpu()).to(gpu) # unique indexes of VQ codes being used
 
-		unx_i = torch.tensor(unx_i, dtype=torch.long, device=gpu)
-		unx_cnts = torch.tensor(unx_cnts, dtype=torch.float, device=gpu)
+		# unx_i = torch.tensor(unx_i, dtype=torch.long, device=gpu)
+		# unx_cnts = torch.tensor(unx_cnts, dtype=torch.float, device=gpu)
 
 		alpha = 0.99
-		c[unx_i] = alpha * c[unx_i] + (1 - alpha) * unx_cnts
-		
 		for _, idx in enumerate(unx_i):
-			#c[idx] = alpha * c[idx] + (1 - alpha) * torch.tensor((i==idx).nonzero().squeeze(dim=1).size(), dtype=torch.float, device=gpu)
+			c[idx] = alpha * c[idx] + (1 - alpha) * torch.tensor((i==idx).nonzero().squeeze(dim=1).size(), dtype=torch.float, device=gpu)
 			w[idx] = alpha * w[idx] + (1 - alpha) * x[i==idx].sum(0).data / c[idx]
 
 		self.dict_val = w
