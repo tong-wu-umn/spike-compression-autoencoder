@@ -5,7 +5,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 from .utils import make_layers, get_padding, L2_dist, SELayer
 from .reslib import ResNeXtBottleNeck, BasicResBlock
-from .groupnorm import GroupNorm
 
 class spk_vq_vae_resnet(nn.Module):
 	def __init__(self, param):
@@ -30,7 +29,6 @@ class spk_vq_vae_resnet(nn.Module):
 		self.res2 = nn.Sequential(
 			nn.Conv1d(conv1_ch, conv2_ch, conv2_ker, groups=1, padding=get_padding(conv2_ker), bias=False),
 			nn.BatchNorm1d(conv2_ch),
-			#nn.GroupNorm(num_channels=conv2_ch, num_groups=norm_group),
 			nn.Dropout(p=dropRate)
 		)
 		
@@ -39,24 +37,10 @@ class spk_vq_vae_resnet(nn.Module):
 		self.deres0 = nn.ConvTranspose1d(conv1_ch, org_dim, conv0_ker, padding=get_padding(conv0_ker))
 
 		self.ds = nn.MaxPool1d(2)
-		self.us = nn.Upsample(scale_factor=2)
 
 		self.embed = nn.Embedding(self.vq_num, self.vq_dim)
 		self.init_embed()
 		self.embed_freq = np.zeros(self.vq_num, dtype=int)
-
-		# parameter initialization
-		# for m in self.modules():
-		# 	if isinstance(m, nn.Conv1d):
-		# 		nn.init.kaiming_uniform_(m.weight, nonlinearity='relu')
-		# 	elif isinstance(m, nn.ConvTranspose1d):
-		# 		nn.init.kaiming_uniform_(m.weight, nonlinearity='relu')
-		# 	elif isinstance(m, nn.BatchNorm1d):
-		# 		m.weight.data.fill_(1)
-		# 		m.bias.data.zero_()
-		# 	elif isinstance(m, nn.Embedding):
-		# 		initrange = 1.0 / self.vq_dim
-		# 		self.embed.weight.data.uniform_(-initrange, initrange)
 
 	def init_embed(self):
 		initrange = 1.0 / self.vq_dim
@@ -73,9 +57,9 @@ class spk_vq_vae_resnet(nn.Module):
 
 	def decoder(self, x):
 		out = self.deres2(x)
-		out = self.us(out)
+		out = F.interpolate(out, scale_factor=2)
 		out = self.deres1(out)
-		out = self.us(out)
+		out = F.interpolate(out, scale_factor=2)
 		out = self.deres1(out)
 		return self.deres0(out)
 
