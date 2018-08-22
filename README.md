@@ -16,7 +16,7 @@ Three datasets are used in the paper, which are all publicly available and can b
 
 - [**Wave_Clus**](https://github.com/csn-le/wave_clus)
 - [**HC1**](http://crcns.org/data-sets/hc/hc-1/about)
-- [**Neuropixels**](http://data.cortexlab.net/singlePhase3/) (requires permission from [Dr. Nick Steinmetz](nick.steinmetz@gmail.com) if used for publication)
+- [**Neuropixels**](http://data.cortexlab.net/singlePhase3/) (requires permission from [Dr. Nick Steinmetz](http://www.nicksteinmetz.com/) if used for publication)
 
 Spikes can be extracted from the datasets either according to their ground truth timing (if available) or using detection methods.
 
