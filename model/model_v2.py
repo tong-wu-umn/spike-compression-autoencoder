@@ -3,7 +3,7 @@ import math
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from .utils import make_layers, get_padding, L2_dist, SELayer
+from .utils import make_layers, get_padding, L2_dist
 from .reslib import ResNeXtBottleNeck, BasicResBlock
 
 class spk_vq_vae_resnet(nn.Module):
@@ -19,21 +19,19 @@ class spk_vq_vae_resnet(nn.Module):
 		self.vq_dim = param[6]
 		self.vq_num = param[7]
 		cardinality = param[8]
-		norm_group  = param[9]
-		self.vqc    = param[10]
-		dropRate    = param[11]
+		dropRate    = param[9]
 
 		# ResNeXt encoder
-		self.res0 = make_layers(org_dim, conv1_ch, conv0_ker, n_layers=1, cardinality=1, norm_group=norm_group, dropRate=0)
-		self.resx = ResNeXtBottleNeck(conv1_ch, conv1_ker, cardinality=cardinality, norm_group=norm_group, dropRate=dropRate)
+		self.res0 = make_layers(org_dim, conv1_ch, conv0_ker, n_layers=1, cardinality=1, dropRate=0)
+		self.resx = ResNeXtBottleNeck(conv1_ch, conv1_ker, cardinality=cardinality, dropRate=dropRate)
 		self.res2 = nn.Sequential(
 			nn.Conv1d(conv1_ch, conv2_ch, conv2_ker, groups=1, padding=get_padding(conv2_ker), bias=False),
 			nn.BatchNorm1d(conv2_ch),
 			nn.Dropout(p=dropRate)
 		)
 		
-		self.deres2 = make_layers(conv2_ch, conv1_ch, conv2_ker, n_layers=1, norm_group=norm_group, decode=True, dropRate=dropRate)
-		self.deres1 = BasicResBlock(conv1_ch, conv1_ker, n_layers=2, norm_group=norm_group, decode=True, dropRate=dropRate)
+		self.deres2 = make_layers(conv2_ch, conv1_ch, conv2_ker, n_layers=1, decode=True, dropRate=dropRate)
+		self.deres1 = BasicResBlock(conv1_ch, conv1_ker, n_layers=2, decode=True, dropRate=dropRate)
 		self.deres0 = nn.ConvTranspose1d(conv1_ch, org_dim, conv0_ker, padding=get_padding(conv0_ker))
 
 		self.ds = nn.MaxPool1d(2)
@@ -63,25 +61,12 @@ class spk_vq_vae_resnet(nn.Module):
 		out = self.deres1(out)
 		return self.deres0(out)
 
-	def decomposed_vq(self, Z):
-		W1 = self.embed1.weight
-		W2 = self.embed2.weight
-
-		z_seg = Z.view(-1, 2, 8)
-		j1 = L2_dist(z_seg[:,0:1],W1[None,:]).sum(2).min(1)[1]
-		j2 = L2_dist(z_seg[:,1:2],W2[None,:]).sum(2).min(1)[1]
-
-		return torch.cat((W1[j1], W2[j2]), dim=1)
-
 	def forward(self, x):
 		h = self.encoder(x)
 		org_h = h
 
 		# reshape
 		sz = h.size()
-		if self.vqc:
-			h = h.permute(0, 2, 1)
-			h = h.contiguous()
 		Z = h.view(-1, self.vq_dim)
 
 		# Sample nearest embedding
@@ -96,12 +81,7 @@ class spk_vq_vae_resnet(nn.Module):
 		ze_sg = Z.detach()
 		W_j_sg = W_j.detach()
 
-		# inverse reshape
-		if self.vqc:
-			h = W_j.view(sz[0], sz[2], sz[1])
-			h = h.permute(0, 2, 1)
-		else:
-			h = W_j.view(sz[0], sz[1], sz[2])
+		h = W_j.view(sz[0], sz[1], sz[2])
 
 		def hook(grad):
 			nonlocal org_h
@@ -126,4 +106,3 @@ class spk_vq_vae_resnet(nn.Module):
 
 	def embed_reset(self):
 		self.embed_freq = np.zeros(self.vq_num, dtype=int)
-

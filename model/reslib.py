@@ -1,10 +1,10 @@
 import numpy as np
 import torch.nn as nn
 import torch.nn.functional as F
-from .utils import get_padding, SELayer
+from .utils import get_padding
 
 class ResNeXtBottleNeck(nn.Module):
-	def __init__(self, channels, ker, cardinality=1, norm_group=1, dropRate=0):
+	def __init__(self, channels, ker, cardinality=1, dropRate=0):
 		super(ResNeXtBottleNeck, self).__init__()
 		inter_channels = int(channels / 2)
 		self.conv_reduce = nn.Conv1d(channels, inter_channels, kernel_size=1, groups=cardinality, bias=False)
@@ -28,7 +28,7 @@ class ResNeXtBottleNeck(nn.Module):
 		return out
 
 class ResNeXtBottleNeck_v2(nn.Module):
-	def __init__(self, channels, ker, cardinality=1, norm_group=1, dropRate=0):
+	def __init__(self, channels, ker, cardinality=1, dropRate=0):
 		super(ResNeXtBottleNeck_v2, self).__init__()
 		inter_channels = int(channels / 2)
 		self.conv_reduce = nn.Conv1d(channels, inter_channels, kernel_size=1, groups=cardinality, bias=False)
@@ -50,7 +50,7 @@ class ResNeXtBottleNeck_v2(nn.Module):
 		return out
 
 class BasicResBlock(nn.Module):
-	def __init__(self, planes, ker, n_layers, norm_group=1, decode=False, dropRate=0):
+	def __init__(self, planes, ker, n_layers, decode=False, dropRate=0):
 		super(BasicResBlock, self).__init__()
 		self.relu = nn.ReLU(inplace=True)
 
