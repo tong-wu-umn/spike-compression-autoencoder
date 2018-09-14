@@ -1,8 +1,6 @@
 # Deep Compressive Autoencoder for Large-Scale Spike Compression
 
-The repository contains source codes for the paper *Deep Compressive Autoencoder for Action Potential Compression in Large-Scale Neural Recording* accepted by *Journal of Neural Engineering*.
-
-The accepted version of the paper can be found [here](http://iopscience.iop.org/article/10.1088/1741-2552/aae18d).
+The repository contains source codes for the paper [*Deep Compressive Autoencoder for Action Potential Compression in Large-Scale Neural Recording*](http://iopscience.iop.org/article/10.1088/1741-2552/aae18d) accepted by *Journal of Neural Engineering*.
 
 [Pytorch 0.4.1](https://pytorch.org/) is required to run the model. An Nvidia GPU with over 4GB memory  is preferred.
 
