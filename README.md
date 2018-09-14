@@ -2,10 +2,12 @@
 
 The repository contains source codes for the paper *Deep Compressive Autoencoder for Action Potential Compression in Large-Scale Neural Recording* accepted by *Journal of Neural Engineering*.
 
-[Pytorch 0.4.1](https://pytorch.org/) is required to run the model. An Nvidia GPU with over 2GB memory  is preferred.
+The accepted version of the paper can be found [here](http://iopscience.iop.org/article/10.1088/1741-2552/aae18d).
+
+[Pytorch 0.4.1](https://pytorch.org/) is required to run the model. An Nvidia GPU with over 4GB memory  is preferred.
 
 ## Authors
-Tong Wu<sup>1</sup>, Wenfeng Zhao<sup>1</sup>, Edward Keefer<sup>2</sup>, Zhi Yang<sup>1</sup>
+Tong Wu<sup>1</sup>, Wenfeng Zhao<sup>1</sup>, Edward Keefer<sup>2</sup>, Zhi Yang<sup>1*</sup>
 
 <sup>1</sup> Department of Biomedical Engineering, University of Minnesota, Minneapolis, MN, 55455, USA
 
